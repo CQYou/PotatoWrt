@@ -8,6 +8,7 @@
 
 	aliases {
 		/* Aliases as required by u-boot to patch MAC addresses */
+		ethernet0 = &dp1;
 		ethernet1 = &dp2;
 		ethernet2 = &dp3;
 		ethernet3 = &dp4;
@@ -33,6 +34,11 @@
 			compatible = "qcom,smem-part";
 		};
 	};
+};
+
+&dp1 {
+	/delete-property/ nvmem-cells;
+	/delete-property/ nvmem-cell-names;
 };
 
 &dp2 {
