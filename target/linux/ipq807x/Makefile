@@ -17,6 +17,6 @@ DEFAULT_PACKAGES += \
 	kmod-qca-nss-dp qca-ssdk-shell kmod-phy-aquantia \
 	ath11k-firmware-ipq8074 kmod-ath11k-ahb wpad-openssl \
 	uboot-envtools automount losetup \
-	autocore luci-app-cpufreq
+	autocore luci-app-cpufreq nss-firmware-ipq8074
 
 $(eval $(call BuildTarget))
