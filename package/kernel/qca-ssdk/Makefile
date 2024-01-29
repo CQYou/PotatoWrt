@@ -1,13 +1,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=qca-ssdk
-PKG_RELEASE:=2
+PKG_RELEASE:=1
 
 PKG_SOURCE_URL:=https://git.codelinaro.org/clo/qsdk/oss/lklm/qca-ssdk.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2022-09-12
-PKG_SOURCE_VERSION:=628b22bc3d5ee81414b75ab3de6a255c82754dec
-PKG_MIRROR_HASH:=859344f79504b9953639dc5aa27042249f68e3a9a269e66d7f7a25e1ab38c110
+PKG_SOURCE_DATE:=2023-01-27
+PKG_SOURCE_VERSION:=161ea43ba0b8579eb297652aa75d2281867b7cea
+PKG_MIRROR_HASH:=2f2c5bcbd464a1f451308b2bcc099603550bcc9c1a18c4a2c184a8ccd9ecb124
 
 PKG_FLAGS:=nonshared
 PKG_BUILD_FLAGS:=no-lto
@@ -29,6 +29,11 @@ define KernelPackage/qca-ssdk/Description
   Driver for Qualcomm Atheros switches.
 endef
 
+define KernelPackage/qca-ssdk/install
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./files/qca-ssdk $(1)/etc/init.d/qca-ssdk
+endef
+
 GCC_VERSION=$(shell echo "$(CONFIG_GCC_VERSION)" | sed 's/[^0-9.]*\([0-9.]*\).*/\1/')
 
 ifdef CONFIG_TOOLCHAIN_BIN_PATH
@@ -36,8 +41,6 @@ TOOLCHAIN_BIN_PATH=$(CONFIG_TOOLCHAIN_BIN_PATH)
 else
 TOOLCHAIN_BIN_PATH=$(TOOLCHAIN_DIR)/bin
 endif
-
-LNX_CONFIG_OPTS = LNX_MAKEOPTS='$(KERNEL_MAKEOPTS)' MODULE_TYPE=KSLIB modules
 
 MAKE_FLAGS+= \
 	TARGET_NAME=$(CONFIG_TARGET_NAME) \
@@ -48,8 +51,8 @@ MAKE_FLAGS+= \
 	ARCH=$(LINUX_KARCH) \
 	TARGET_SUFFIX=$(CONFIG_TARGET_SUFFIX) \
 	GCC_VERSION=$(GCC_VERSION) \
-	EXTRA_CFLAGS=-fno-stack-protector -I$(STAGING_DIR)/usr/include \
-	$(LNX_CONFIG_OPTS)
+	EXTRA_CFLAGS='-fno-PIC -fno-stack-protector -I$(STAGING_DIR)/usr/include' \
+	$(KERNEL_MAKE_FLAGS)
 
 ifeq ($(CONFIG_TARGET_BOARD), "ipq807x")
     MAKE_FLAGS+= CHIP_TYPE=HPPE PTP_FEATURE=disable SWCONFIG_FEATURE=disable
