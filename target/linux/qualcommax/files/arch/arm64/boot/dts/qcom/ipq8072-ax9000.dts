@@ -6,6 +6,7 @@
 #include "ipq8074.dtsi"
 #include "ipq8074-hk-cpu.dtsi"
 #include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
@@ -280,34 +281,32 @@
 				reg = <0xf80000 0x80000>;
 				read-only;
 
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
+				compatible = "nvmem-cells";
+				#address-cells = <1>;
+				#size-cells = <1>;
 
-					macaddr_dp1: macaddr@0 {
-						reg = <0x0 0x6>;
-					};
+				macaddr_dp1: macaddr@0 {
+					reg = <0x0 0x6>;
+				};
 
-					macaddr_dp2: macaddr@6 {
-						reg = <0x6 0x6>;
-					};
+				macaddr_dp2: macaddr@6 {
+					reg = <0x6 0x6>;
+				};
 
-					macaddr_dp3: macaddr@c {
-						reg = <0xc 0x6>;
-					};
+				macaddr_dp3: macaddr@c {
+					reg = <0xc 0x6>;
+				};
 
-					macaddr_dp4: macaddr@12 {
-						reg = <0x12 0x6>;
-					};
+				macaddr_dp4: macaddr@12 {
+					reg = <0x12 0x6>;
+				};
 
-					macaddr_dp5: macaddr@18 {
-						reg = <0x18 0x6>;
-					};
+				macaddr_dp5: macaddr@18 {
+					reg = <0x18 0x6>;
+				};
 
-					caldata_qca9889: caldata@4d000 {
-						reg = <0x4d000 0x844>;
-					};
+				caldata_qca9889: caldata@4d000 {
+					reg = <0x4d000 0x844>;
 				};
 			};
 
@@ -317,19 +316,24 @@
 			};
 
 			partition@1080000 {
-				/* This is crash + crash_syslog parts combined */
-				label = "pstore";
-				reg = <0x1080000 0x100000>;
+				label = "crash";
+				reg = <0x1080000 0x80000>;
+			};
+
+			partition@1100000 {
+				label = "crash_syslog";
+				reg = <0x1100000 0x80000>;
 			};
 
 			partition@1180000 {
-				label = "ubi_kernel";
-				reg = <0x1180000 0x3800000>;
+				label = "rootfs";
+				reg = <0x1180000 0xe800000>;
 			};
 
-			partition@4980000 {
-				label = "rootfs";
-				reg = <0x4980000 0xb680000>;
+			partition@f980000 {
+				label = "cfg_bak";
+				reg = <0xf980000 0x80000>;
+
 			};
 		};
 	};
@@ -377,7 +381,20 @@
 	qca8081: ethernet-phy@24 {
 		compatible = "ethernet-phy-id004d.d101";
 		reg = <24>;
+		reset-deassert-us = <10000>;
 		reset-gpios = <&tlmm 44 GPIO_ACTIVE_LOW>;
+
+		leds {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			led@0 {
+				reg = <0>;
+				color = <LED_COLOR_ID_GREEN>;
+				function = LED_FUNCTION_WAN;
+				default-state = "keep";
+			};
+		};
 	};
 };
 

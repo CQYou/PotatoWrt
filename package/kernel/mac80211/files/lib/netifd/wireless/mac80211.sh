@@ -142,8 +142,9 @@ mac80211_hostapd_setup_base() {
 	[ -n "$acs_exclude_dfs" ] && [ "$acs_exclude_dfs" -gt 0 ] &&
 		append base_cfg "acs_exclude_dfs=1" "$N"
 
-	json_get_vars noscan ht_coex min_tx_power:0 tx_burst vendor_vht
+	json_get_vars noscan ht_coex min_tx_power:0
 	json_get_values ht_capab_list ht_capab
+	json_get_vars tx_burst
 	json_get_values channel_list channels
 
 	[ "$auto_channel" = 0 ] && [ -z "$channel_list" ] && \
@@ -295,7 +296,7 @@ mac80211_hostapd_setup_base() {
 	}
 	[ "$hwmode" = "a" ] || enable_ac=0
 
-	if [ "$enable_ac" != "0" -o "$vendor_vht" = "1" ]; then
+	if [ "$enable_ac" != "0" ]; then
 		json_get_vars \
 			rxldpc:1 \
 			short_gi_80:1 \
@@ -559,7 +560,7 @@ get_board_phy_name() (
 		local ref_path="$3"
 
 		json_select "$key"
-		json_get_values path
+		json_get_vars path
 		json_select ..
 
 		[ "${ref_path%+*}" = "$path" ] && fallback_phy=$key
@@ -591,7 +592,7 @@ rename_board_phy_by_name() (
 	json_load_file /etc/board.json
 	json_select wlan
 	json_select "${phy%.*}" || return 0
-	json_get_values path
+	json_get_vars path
 
 	prev_phy="$(iwinfo nl80211 phyname "path=$path${suffix:++$suffix}")"
 	[ -n "$prev_phy" ] || return 0
